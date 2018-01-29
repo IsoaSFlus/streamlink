@@ -27,7 +27,7 @@ _hls_schema = validate.Schema(
 )
 
 
-class Tpo(Plugin):
+class Hinet(Plugin):
     @classmethod
     def can_handle_url(self, url):
         return _url_re.match(url)
@@ -42,9 +42,10 @@ class Tpo(Plugin):
         hls_json = http.get('http://hichannel.hinet.net/radio/cp.do?id={0}'.format(channel))
         #hls_json = hls_json.content.decode('utf-8')
         hls_dict = http.json(hls_json)
+        hls_dict = HLSStream.parse_variant_playlist(self.session, hls_dict['_adc'])
         if not hls_dict:
             return
-        yield "live", HLSStream(self.session, hls_dict['_adc'])
+        yield "live", hls_dict['135k']
 
 
-__plugin__ = Tpo
+__plugin__ = Hinet
