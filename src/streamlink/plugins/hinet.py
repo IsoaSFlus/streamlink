@@ -6,12 +6,13 @@ from streamlink.stream import HLSStream
 from streamlink.plugin.api import useragents
 from streamlink.utils import update_scheme
 
-TPO_URL = "http://hichannel.hinet.net/radio/index.do"
+HINET_URL = "http://hichannel.hinet.net/radio/index.do"
 
-_url_re = re.compile(r'http://hichannel.hinet.net/radio/index.do', re.VERBOSE)
+_url_re = re.compile(r'http://hichannel.hinet.net/(?P<room>[^/]+)', re.VERBOSE)
 _hls_re = re.compile(r'^[\S\s]*"hls":"(?P<url>[^"]+)"', re.MULTILINE)
-#_chn_re = re.compile(r'^[\s\S]*<li class="no6">[\s\S]*?onclick="uiControl.playRank(\'(?P<channel>[^\']+)\')">', re.MULTILINE)
-_chn_re = re.compile(r'^[\s\S]*onclick="uiControl.playRank\(\'(?P<channel>[\w]+)\'\)">Classical Taiwan愛樂電台</a>', re.MULTILINE)
+#  _chn_re = re.compile(r'^[\s\S]*<li class="no6">[\s\S]*?onclick="uiControl.playRank\(\'(?P<channel>[^\']+)\'\)">', re.MULTILINE)
+_chn_re_str = r'^[\s\S]*<li class="{0}">[\s\S]*?onclick="uiControl.playRank\(\'(?P<channel>[^\']+)\'\)">'
+#  _chn_re = re.compile(r'^[\s\S]*onclick="uiControl.playRank\(\'(?P<channel>[\w]+)\'\)">Classical Taiwan愛樂電台</a>', re.MULTILINE)
 
 _hls_schema = validate.Schema(
     validate.all(
@@ -35,7 +36,11 @@ class Hinet(Plugin):
     def _get_streams(self):
         http.headers.update({"User-Agent": useragents.CHROME,
                              'Referer': 'http://hichannel.hinet.net/radio/index.do'})
-        channel = http.get(TPO_URL)
+        match = _url_re.match(self.url)
+        room = match.group('room')
+        _chn_re = re.compile(_chn_re_str.format(room), re.MULTILINE)
+
+        channel = http.get(HINET_URL)
         match = _chn_re.match(channel.content.decode('utf-8'))
         channel = match.group("channel")
 
