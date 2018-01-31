@@ -6,7 +6,8 @@ from streamlink.stream import HLSStream
 from streamlink.plugin.api import useragents
 from streamlink.utils import update_scheme
 
-YY_URL = "http://interface.yy.com/hls/new/get/{0}/{0}/1200?source=wapyy&callback=jsonp2"
+#YY_URL = "http://interface.yy.com/hls/new/get/{0}/{0}/1200?source=wapyy&callback=jsonp2"
+YY_URL = 'http://interface.yy.com/hls/get/0/{0}/{0}?appid=0&excid=1200&type=m3u8&isHttps=0&callback=jsonp2'
 
 _url_re = re.compile(r'http(s)?://(www\.)?yy.com/(?P<channel>[^/]+)', re.VERBOSE)
 _hls_re = re.compile(r'^[\S\s]*"hls":"(?P<url>[^"]+)"', re.VERBOSE)
